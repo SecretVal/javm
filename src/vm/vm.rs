@@ -8,7 +8,7 @@ pub struct VM {
     pub memory: Memory,
     pub program: Vec<Instruction>,
     pc: usize,
-    sp: usize,
+    sp: i64,
 }
 
 impl VM {
@@ -17,15 +17,13 @@ impl VM {
             memory: Memory::new(),
             program: p,
             pc: 0,
-            sp: 0,
+            sp: -1,
         }
     }
 
     fn push(&mut self, value: u8) -> Result<(), &'static str> {
+        self.sp += 1;
         self.memory.write(self.sp, value)?;
-        if self.sp <= 0 {
-            self.sp += 1;
-        }
         Ok(())
     }
 
