@@ -1,15 +1,24 @@
+mod asm;
 mod vm;
 
-use vm::{instructions::Instruction, vm::VM};
+use std::{env, fs};
+
+use asm::{generator::Generator, parser::Parser};
+use vm::vm::VM;
 
 fn main() -> Result<(), &'static str> {
-    let mut vm = VM::new(vec![
-        Instruction::Push(1),
-        Instruction::Push(2),
-        Instruction::AddStack,
-        Instruction::Print,
-        Instruction::Halt,
-    ]);
+    let args: Vec<_> = env::args().collect();
+    let filename = &args[1];
+    let file = fs::read_to_string(filename).unwrap();
+    let mut parser = Parser::new(asm::tokenize(file));
+    let mut expressions = vec![];
+    while let Some(expr) = parser.parse_expression() {
+        expressions.push(expr);
+    }
+    let mut generator = Generator::new(expressions);
+    while let Some(_) = generator.generate_expression() {}
+    println!("{:?}", generator.output);
+    let mut vm = VM::new(generator.output);
     while !vm.halt {
         vm.step()?;
     }
