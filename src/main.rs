@@ -7,12 +7,11 @@ fn main() -> Result<(), &'static str> {
         Instruction::Push(1),
         Instruction::Push(2),
         Instruction::AddStack,
+        Instruction::Print,
+        Instruction::Halt,
     ]);
-    vm.step()?;
-    println!("{}", vm.top()?);
-    vm.step()?;
-    println!("{}", vm.top()?);
-    vm.step()?;
-    println!("{}", vm.top()?);
+    while !vm.halt {
+        vm.step()?;
+    }
     Ok(())
 }

@@ -9,6 +9,7 @@ pub struct VM {
     pub program: Vec<Instruction>,
     pc: usize,
     sp: i64,
+    pub halt: bool,
 }
 
 impl VM {
@@ -18,6 +19,7 @@ impl VM {
             program: p,
             pc: 0,
             sp: -1,
+            halt: false,
         }
     }
 
@@ -28,13 +30,33 @@ impl VM {
     }
 
     pub fn step(&mut self) -> Result<(), &'static str> {
-        let inst = self.program[self.pc];
-        match inst {
+        match self.program[self.pc] {
             Instruction::Push(num) => self.push(num)?,
             Instruction::AddStack => {
-                let n1 = self.memory.read(self.sp)?;
-                let n2 = self.memory.read(self.sp - 1)?;
+                let n1 = self.memory.read(self.sp - 1)?;
+                let n2 = self.memory.read(self.sp)?;
                 self.push(n1 + n2)?
+            }
+            Instruction::SubStack => {
+                let n1 = self.memory.read(self.sp - 1)?;
+                let n2 = self.memory.read(self.sp)?;
+                self.push(n1 - n2)?
+            }
+            Instruction::MulStack => {
+                let n1 = self.memory.read(self.sp - 1)?;
+                let n2 = self.memory.read(self.sp)?;
+                self.push(n1 * n2)?
+            }
+            Instruction::DivStack => {
+                let n1 = self.memory.read(self.sp - 1)?;
+                let n2 = self.memory.read(self.sp)?;
+                self.push(n1 / n2)?
+            }
+            Instruction::Halt => {
+                self.halt = true;
+            }
+            Instruction::Print => {
+                println!("{}", self.top()?);
             }
         };
         self.pc += 1;
