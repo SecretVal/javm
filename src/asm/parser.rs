@@ -7,7 +7,7 @@ pub(crate) struct Expression {
 #[derive(Debug)]
 pub(crate) enum ExpressionKind {
     PushExpression(u64),
-    JmpExpression(u64),
+    JmpExpression(usize),
     AddExpression,
     SubExpression,
     MulExpression,
@@ -38,7 +38,7 @@ impl Parser {
                 ExpressionKind::PushExpression(value)
             }
             "jmp" => {
-                let value = self.tokens[self.pos + 1].parse::<u64>().unwrap();
+                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
                 self.pos += 1;
                 ExpressionKind::JmpExpression(value)
             }

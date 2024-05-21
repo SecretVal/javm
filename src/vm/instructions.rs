@@ -9,5 +9,5 @@ pub enum Instruction {
     DivStack,
     Halt,
     Print,
-    Jmp(u64),
+    Jmp(usize),
 }
