@@ -10,4 +10,6 @@ pub enum Instruction {
     Halt,
     Print,
     Jmp(usize),
+    JmpZero(usize),
+    JmpEquals(usize),
 }

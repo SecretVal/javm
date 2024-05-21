@@ -8,6 +8,8 @@ pub(crate) struct Expression {
 pub(crate) enum ExpressionKind {
     PushExpression(u64),
     JmpExpression(usize),
+    JmpZeroExpression(usize),
+    JmpEqualsExpression(usize),
     AddExpression,
     SubExpression,
     MulExpression,
@@ -41,6 +43,16 @@ impl Parser {
                 let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
                 self.pos += 1;
                 ExpressionKind::JmpExpression(value)
+            }
+            "jz" => {
+                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
+                self.pos += 1;
+                ExpressionKind::JmpZeroExpression(value)
+            }
+            "je" => {
+                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
+                self.pos += 1;
+                ExpressionKind::JmpEqualsExpression(value)
             }
             "halt" => ExpressionKind::HaltExpression,
             "add" => ExpressionKind::AddExpression,

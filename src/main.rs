@@ -32,7 +32,10 @@ fn main() -> Result<(), &'static str> {
         let mut generator = Generator::new(expressions);
         while let Some(_) = generator.generate_expression() {}
         let vm = VM::new(generator.output);
-        let _ = fs::write("a.jab", ron::to_string(&vm).unwrap());
+        let _ = fs::write(
+            format!("{}.jab", filename.split(".").collect::<Vec<_>>()[0]),
+            ron::to_string(&vm).unwrap(),
+        );
     } else if args.execute {
         let mut vm: VM = ron::from_str(&file).unwrap();
         while !vm.halt {

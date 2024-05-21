@@ -25,6 +25,8 @@ impl Generator {
         self.output.push(match self.expressions[self.pos].kind {
             ExpressionKind::PushExpression(val) => Instruction::Push(val),
             ExpressionKind::JmpExpression(val) => Instruction::Jmp(val),
+            ExpressionKind::JmpZeroExpression(val) => Instruction::JmpZero(val),
+            ExpressionKind::JmpEqualsExpression(val) => Instruction::JmpEquals(val),
             ExpressionKind::AddExpression => Instruction::AddStack,
             ExpressionKind::SubExpression => Instruction::SubStack,
             ExpressionKind::MulExpression => Instruction::MulStack,
