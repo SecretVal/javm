@@ -25,14 +25,15 @@ impl VM {
         }
     }
 
-    fn push(&mut self, value: u8) -> Result<(), &'static str> {
+    fn push(&mut self, value: u64) -> Result<(), &'static str> {
         self.sp += 1;
         self.memory.write(self.sp, value)?;
         Ok(())
     }
 
     pub fn step(&mut self) -> Result<(), &'static str> {
-        match self.program[self.pc] {
+        let inst = self.program[self.pc];
+        match inst {
             Instruction::Push(num) => self.push(num)?,
             Instruction::AddStack => {
                 let n1 = self.memory.read(self.sp - 1)?;
@@ -60,12 +61,18 @@ impl VM {
             Instruction::Print => {
                 println!("{}", self.top()?);
             }
+            Instruction::Jmp(dest) => {
+                self.pc = dest;
+            }
         };
-        self.pc += 1;
+        match inst {
+            Instruction::Jmp(_) => {}
+            _ => self.pc += 1,
+        };
         Ok(())
     }
 
-    pub fn top(&self) -> Result<u8, &'static str> {
+    pub fn top(&self) -> Result<u64, &'static str> {
         self.memory.read(self.sp)
     }
 }

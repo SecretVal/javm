@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
 pub trait Mem {
-    fn write(&mut self, pos: i64, value: u8) -> Result<(), &'static str>;
-    fn read(&self, pos: i64) -> Result<u8, &'static str>;
+    fn write(&mut self, pos: i64, value: u64) -> Result<(), &'static str>;
+    fn read(&self, pos: i64) -> Result<u64, &'static str>;
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Memory {
-    pub(crate) bytes: Vec<u8>,
+    pub(crate) bytes: Vec<u64>,
     pub(crate) size: i64,
 }
 
@@ -20,7 +20,7 @@ impl Memory {
     }
 }
 impl Mem for Memory {
-    fn write(&mut self, pos: i64, value: u8) -> Result<(), &'static str> {
+    fn write(&mut self, pos: i64, value: u64) -> Result<(), &'static str> {
         if self.size + 1 < pos {
             return Err("Memory overflow");
         }
@@ -28,7 +28,7 @@ impl Mem for Memory {
         Ok(())
     }
 
-    fn read(&self, pos: i64) -> Result<u8, &'static str> {
+    fn read(&self, pos: i64) -> Result<u64, &'static str> {
         if self.size < pos {
             return Err("Memory overflow");
         }
