@@ -1,26 +1,43 @@
 mod asm;
 mod vm;
 
-use std::{env, fs};
+use std::fs;
 
 use asm::{generator::Generator, parser::Parser};
 use vm::vm::VM;
 
+use clap::Parser as ClapParser;
+
+#[derive(ClapParser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    #[arg(short, long)]
+    asssemble: bool,
+    #[arg(short, long)]
+    execute: bool,
+    #[arg()]
+    file: String,
+}
+
 fn main() -> Result<(), &'static str> {
-    let args: Vec<_> = env::args().collect();
-    let filename = &args[1];
-    let file = fs::read_to_string(filename).unwrap();
-    let mut parser = Parser::new(asm::tokenize(file));
-    let mut expressions = vec![];
-    while let Some(expr) = parser.parse_expression() {
-        expressions.push(expr);
-    }
-    let mut generator = Generator::new(expressions);
-    while let Some(_) = generator.generate_expression() {}
-    println!("{:?}", generator.output);
-    let mut vm = VM::new(generator.output);
-    while !vm.halt {
-        vm.step()?;
+    let args = Args::parse();
+    let filename = args.file;
+    let file = fs::read_to_string(&filename).unwrap();
+    if args.asssemble {
+        let mut parser = Parser::new(asm::tokenize(file));
+        let mut expressions = vec![];
+        while let Some(expr) = parser.parse_expression() {
+            expressions.push(expr);
+        }
+        let mut generator = Generator::new(expressions);
+        while let Some(_) = generator.generate_expression() {}
+        let vm = VM::new(generator.output);
+        let _ = fs::write("a.jab", ron::to_string(&vm).unwrap());
+    } else if args.execute {
+        let mut vm: VM = ron::from_str(&file).unwrap();
+        while !vm.halt {
+            vm.step()?;
+        }
     }
     Ok(())
 }

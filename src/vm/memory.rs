@@ -1,9 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 pub trait Mem {
     fn write(&mut self, pos: i64, value: u8) -> Result<(), &'static str>;
     fn read(&self, pos: i64) -> Result<u8, &'static str>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Memory {
     pub(crate) bytes: Vec<u8>,
     pub(crate) size: i64,

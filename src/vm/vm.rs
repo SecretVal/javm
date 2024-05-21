@@ -1,9 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 use super::{
     instructions::*,
     memory::{Mem, Memory},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct VM {
     pub memory: Memory,
     pub program: Vec<Instruction>,
