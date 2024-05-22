@@ -10,6 +10,8 @@ pub(crate) enum ExpressionKind {
     JmpExpression(usize),
     JmpZeroExpression(usize),
     JmpEqualsExpression(usize),
+    JmpGreaterExpression(usize),
+    JmpLessExpression(usize),
     AddExpression,
     SubExpression,
     MulExpression,
@@ -53,6 +55,16 @@ impl Parser {
                 let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
                 self.pos += 1;
                 ExpressionKind::JmpEqualsExpression(value)
+            }
+            "jl" => {
+                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
+                self.pos += 1;
+                ExpressionKind::JmpLessExpression(value)
+            }
+            "jg" => {
+                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
+                self.pos += 1;
+                ExpressionKind::JmpGreaterExpression(value)
             }
             "halt" => ExpressionKind::HaltExpression,
             "add" => ExpressionKind::AddExpression,

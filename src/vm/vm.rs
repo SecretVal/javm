@@ -74,6 +74,16 @@ impl VM {
                     self.pc = dest;
                 }
             }
+            Instruction::JmpLess(dest) => {
+                if self.top()? < self.memory.read(self.sp - 1)? {
+                    self.pc = dest;
+                }
+            }
+            Instruction::JmpGreater(dest) => {
+                if self.top()? > self.memory.read(self.sp - 1)? {
+                    self.pc = dest;
+                }
+            }
         };
         match inst {
             Instruction::Jmp(_) => {}
@@ -84,6 +94,16 @@ impl VM {
             }
             Instruction::JmpEquals(_) => {
                 if self.top()? != self.memory.read(self.sp - 1)? {
+                    self.pc += 1;
+                }
+            }
+            Instruction::JmpGreater(_) => {
+                if !(self.top()? > self.memory.read(self.sp - 1)?) {
+                    self.pc += 1;
+                }
+            }
+            Instruction::JmpLess(_) => {
+                if !(self.top()? < self.memory.read(self.sp - 1)?) {
                     self.pc += 1;
                 }
             }

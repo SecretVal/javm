@@ -12,4 +12,6 @@ pub enum Instruction {
     Jmp(usize),
     JmpZero(usize),
     JmpEquals(usize),
+    JmpGreater(usize),
+    JmpLess(usize),
 }

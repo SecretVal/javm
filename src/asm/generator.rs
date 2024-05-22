@@ -27,6 +27,8 @@ impl Generator {
             ExpressionKind::JmpExpression(val) => Instruction::Jmp(val),
             ExpressionKind::JmpZeroExpression(val) => Instruction::JmpZero(val),
             ExpressionKind::JmpEqualsExpression(val) => Instruction::JmpEquals(val),
+            ExpressionKind::JmpLessExpression(val) => Instruction::JmpLess(val),
+            ExpressionKind::JmpGreaterExpression(val) => Instruction::JmpGreater(val),
             ExpressionKind::AddExpression => Instruction::AddStack,
             ExpressionKind::SubExpression => Instruction::SubStack,
             ExpressionKind::MulExpression => Instruction::MulStack,
