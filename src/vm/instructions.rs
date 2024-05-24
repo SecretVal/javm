@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Instruction {
+    Nop,
     Push(u64),
     AddStack,
     SubStack,

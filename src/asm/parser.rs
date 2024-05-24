@@ -1,13 +1,14 @@
 use std::process::exit;
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct Expression {
     pub(crate) kind: ExpressionKind,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) enum ExpressionKind {
     PushExpression(u64),
     JmpExpression(usize),
+    JmpLabelExpression(String),
     JmpZeroExpression(usize),
     JmpEqualsExpression(usize),
     JmpGreaterExpression(usize),
@@ -18,6 +19,7 @@ pub(crate) enum ExpressionKind {
     DivExpression,
     HaltExpression,
     PrintExpression,
+    Label(String),
 }
 
 #[derive(Debug, Clone)]
@@ -42,9 +44,15 @@ impl Parser {
                 ExpressionKind::PushExpression(value)
             }
             "jmp" => {
-                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
-                self.pos += 1;
-                ExpressionKind::JmpExpression(value)
+                let value = self.tokens[self.pos + 1].parse::<usize>();
+                if value.is_err() {
+                    let value = self.tokens[self.pos + 1].parse::<String>().unwrap();
+                    self.pos += 1;
+                    ExpressionKind::JmpLabelExpression(value)
+                } else {
+                    self.pos += 1;
+                    ExpressionKind::JmpExpression(value.unwrap())
+                }
             }
             "jz" => {
                 let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
@@ -72,9 +80,19 @@ impl Parser {
             "mul" => ExpressionKind::MulExpression,
             "div" => ExpressionKind::DivExpression,
             "print" => ExpressionKind::PrintExpression,
-            _ => {
-                eprintln!("unexpected token");
-                exit(1);
+            t => {
+                if t.ends_with(":") {
+                    let mut s = t.to_string();
+                    s.pop();
+                    let e = Some(Expression {
+                        kind: ExpressionKind::Label(s),
+                    });
+                    self.pos += 1;
+                    return e;
+                } else {
+                    eprintln!("unexpected token: {t}");
+                    exit(1);
+                }
             }
         };
         self.pos += 1;

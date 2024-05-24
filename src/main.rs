@@ -42,5 +42,6 @@ fn main() -> Result<(), &'static str> {
             vm.step()?;
         }
     }
+
     Ok(())
 }

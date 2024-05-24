@@ -9,7 +9,7 @@ use super::{
 pub struct VM {
     pub memory: Memory,
     pub program: Vec<Instruction>,
-    pc: usize,
+    pub pc: usize,
     sp: i64,
     pub halt: bool,
 }
@@ -84,6 +84,7 @@ impl VM {
                     self.pc = dest;
                 }
             }
+            Instruction::Nop => {}
         };
         match inst {
             Instruction::Jmp(_) => {}
