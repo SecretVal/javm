@@ -24,24 +24,40 @@ fn main() -> Result<(), &'static str> {
     let filename = args.file;
     let file = fs::read_to_string(&filename).unwrap();
     if args.asssemble {
-        let mut parser = Parser::new(asm::tokenize(file));
-        let mut expressions = vec![];
-        while let Some(expr) = parser.parse_expression() {
-            expressions.push(expr);
-        }
-        let mut generator = Generator::new(expressions);
-        while let Some(_) = generator.generate_expression() {}
-        let vm = VM::new(generator.output);
-        let _ = fs::write(
-            format!("{}.jab", filename.split(".").collect::<Vec<_>>()[0]),
-            ron::to_string(&vm).unwrap(),
-        );
+        assemble(file, filename);
     } else if args.execute {
-        let mut vm: VM = ron::from_str(&file).unwrap();
-        while !vm.halt {
-            vm.step()?;
-        }
+        execute(file)?;
+    } else if !args.execute && !args.asssemble {
+        assemble(file, filename.clone());
+        let bin_file = fs::read_to_string(format!(
+            "{}.jab",
+            filename.split(".").collect::<Vec<_>>()[0]
+        ))
+        .unwrap();
+        execute(bin_file)?;
     }
 
+    Ok(())
+}
+
+fn assemble(file: String, filename: String) {
+    let mut parser = Parser::new(asm::tokenize(file));
+    let mut expressions = vec![];
+    while let Some(expr) = parser.parse_expression() {
+        expressions.push(expr);
+    }
+    let mut generator = Generator::new(expressions);
+    while let Some(_) = generator.generate_expression() {}
+    let vm = VM::new(generator.output);
+    let _ = fs::write(
+        format!("{}.jab", filename.split(".").collect::<Vec<_>>()[0]),
+        ron::to_string(&vm).unwrap(),
+    );
+}
+fn execute(file: String) -> Result<(), &'static str> {
+    let mut vm: VM = ron::from_str(&file).unwrap();
+    while !vm.halt {
+        vm.step()?;
+    }
     Ok(())
 }

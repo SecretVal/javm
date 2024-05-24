@@ -10,9 +10,13 @@ pub(crate) enum ExpressionKind {
     JmpExpression(usize),
     JmpLabelExpression(String),
     JmpZeroExpression(usize),
+    JmpLabelZeroExpression(String),
     JmpEqualsExpression(usize),
+    JmpLabelEqualsExpression(String),
     JmpGreaterExpression(usize),
+    JmpLabelGreaterExpression(String),
     JmpLessExpression(usize),
+    JmpLabelLessExpression(String),
     AddExpression,
     SubExpression,
     MulExpression,
@@ -55,24 +59,48 @@ impl Parser {
                 }
             }
             "jz" => {
-                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
-                self.pos += 1;
-                ExpressionKind::JmpZeroExpression(value)
+                let value = self.tokens[self.pos + 1].parse::<usize>();
+                if value.is_err() {
+                    let value = self.tokens[self.pos + 1].parse::<String>().unwrap();
+                    self.pos += 1;
+                    ExpressionKind::JmpLabelZeroExpression(value)
+                } else {
+                    self.pos += 1;
+                    ExpressionKind::JmpZeroExpression(value.unwrap())
+                }
             }
             "je" => {
-                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
-                self.pos += 1;
-                ExpressionKind::JmpEqualsExpression(value)
+                let value = self.tokens[self.pos + 1].parse::<usize>();
+                if value.is_err() {
+                    let value = self.tokens[self.pos + 1].parse::<String>().unwrap();
+                    self.pos += 1;
+                    ExpressionKind::JmpLabelEqualsExpression(value)
+                } else {
+                    self.pos += 1;
+                    ExpressionKind::JmpEqualsExpression(value.unwrap())
+                }
             }
             "jl" => {
-                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
-                self.pos += 1;
-                ExpressionKind::JmpLessExpression(value)
+                let value = self.tokens[self.pos + 1].parse::<usize>();
+                if value.is_err() {
+                    let value = self.tokens[self.pos + 1].parse::<String>().unwrap();
+                    self.pos += 1;
+                    ExpressionKind::JmpLabelLessExpression(value)
+                } else {
+                    self.pos += 1;
+                    ExpressionKind::JmpLessExpression(value.unwrap())
+                }
             }
             "jg" => {
-                let value = self.tokens[self.pos + 1].parse::<usize>().unwrap();
-                self.pos += 1;
-                ExpressionKind::JmpGreaterExpression(value)
+                let value = self.tokens[self.pos + 1].parse::<usize>();
+                if value.is_err() {
+                    let value = self.tokens[self.pos + 1].parse::<String>().unwrap();
+                    self.pos += 1;
+                    ExpressionKind::JmpLabelGreaterExpression(value)
+                } else {
+                    self.pos += 1;
+                    ExpressionKind::JmpGreaterExpression(value.unwrap())
+                }
             }
             "halt" => ExpressionKind::HaltExpression,
             "add" => ExpressionKind::AddExpression,

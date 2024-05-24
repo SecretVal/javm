@@ -60,6 +60,18 @@ impl Generator {
                 ExpressionKind::HaltExpression => Instruction::Halt,
                 ExpressionKind::PrintExpression => Instruction::Print,
                 ExpressionKind::Label(_) => Instruction::Nop,
+                ExpressionKind::JmpLabelZeroExpression(label) => {
+                    Instruction::JmpZero(*self.labels.get(&label).unwrap())
+                }
+                ExpressionKind::JmpLabelEqualsExpression(label) => {
+                    Instruction::JmpEquals(*self.labels.get(&label).unwrap())
+                }
+                ExpressionKind::JmpLabelGreaterExpression(label) => {
+                    Instruction::JmpGreater(*self.labels.get(&label).unwrap())
+                }
+                ExpressionKind::JmpLabelLessExpression(label) => {
+                    Instruction::JmpLess(*self.labels.get(&label).unwrap())
+                }
             });
         self.pos += 1;
         Some(())
